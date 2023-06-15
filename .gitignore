@@ -1,0 +1,15 @@
+.env
+env
+__pycache__
+.pytest_cache
+.xml
+*.log
+*.pot
+*.pyc
+/.idea/.name
+/.idea/misc.xml
+/.idea/vcs.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/parser_for_Lamoda.iml
+/.idea/modules.xml
+/.idea/.gitignore
