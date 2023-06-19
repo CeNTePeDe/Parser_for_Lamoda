@@ -2,17 +2,20 @@ from pydantic import BaseModel, Field, HttpUrl
 
 
 class Product(BaseModel):
-    name: str = Field()
-    link: HttpUrl
+    name_product: str = Field()
+    picture_link: HttpUrl
     price: float = Field()
-    discription: dict = Field()
+    product_detail_link: HttpUrl
+    description: dict = Field()
+
 
     class Config:
         schema_extra = {
             "example": {
-                "name": "product_name",
-                "link": "",
+                "name_product": "example",
+                "picture_link": "https://www.example.by",
                 "price": 12345.0,
-                "description": {},
+                "product_detail_link": "https://www.example.by",
+                "description": {}
             }
         }
