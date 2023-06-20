@@ -1,9 +1,10 @@
-import os
-
 from pymongo import MongoClient
 
-client = MongoClient(os.environ["MONGODB_URL"])
+from config.dev import settings
 
-db = client["product_db"]
 
-collection = db["collection"]
+client = MongoClient(settings.MONGO_URL)
+
+db = client[settings.MONGODB_DB]
+
+collection = db[settings.PRODUCT_COLLECTION]

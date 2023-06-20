@@ -13,3 +13,5 @@ __pycache__
 /.idea/parser_for_Lamoda.iml
 /.idea/modules.xml
 /.idea/.gitignore
+/.env
+
