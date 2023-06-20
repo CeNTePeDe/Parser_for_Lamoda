@@ -6,7 +6,7 @@ class Product(BaseModel):
     picture_link: HttpUrl
     price: float = Field()
     product_detail_link: HttpUrl
-    description: dict = Field()
+    description: dict
 
 
     class Config:

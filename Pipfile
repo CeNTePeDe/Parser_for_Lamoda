@@ -16,6 +16,7 @@ black = "*"
 pytest = "*"
 aiohttp = "*"
 lxml = "*"
+isort = "*"
 
 [dev-packages]
 
