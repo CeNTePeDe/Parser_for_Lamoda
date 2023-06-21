@@ -5,7 +5,7 @@ import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
-from config.dev import settings
+from settings import environment
 from core.constant_variables import MAIN_PAGE
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ async def get_page_data(
     url = f"{url}?page={page}"
     logger.info(f"get_page_data function is started on the page={page}, url={url}")
     product_data: list = []
-    async with session.get(url=url, headers=settings.HEADERS) as response:
+    async with session.get(url=url, headers=environment.settings.HEADERS) as response:
         response_text = await response.text()
         html = BeautifulSoup(response_text, "lxml")
         product_items = html.find_all("div", class_="x-product-card__card")
@@ -39,12 +39,13 @@ async def get_page_data(
             scr_link = MAIN_PAGE + item.find("a").get("href")
             product_data.append(
                 {
-                    "name": name,
-                    "picture": picture_link,
+                    "name_product": name,
+                    "picture_link": picture_link,
                     "price": price.text,
-                    "link_to_product": scr_link,
+                    "product_detail_link": scr_link,
                 }
             )
+
         product_data = await get_data_for_each_product(
             product_data=product_data, session=session
         )
@@ -58,7 +59,7 @@ async def get_data_for_each_product(
     logger.info("get_data_for_each_product is started")
     for product_item in product_data:
         async with session.get(
-            url=product_item["link_to_product"], headers=settings.HEADERS
+            url=product_item["link_to_product"], headers=environment.settings.HEADERS
         ) as response:
             response_text = await response.text()
             html_item_product = BeautifulSoup(response_text, "lxml")
@@ -80,16 +81,18 @@ async def get_data_for_each_product(
                 characteristic.update(
                     {item_title.text.strip(): item_value.text.strip()}
                 )
+
             product_item["characteristic"] = characteristic
             product_item["description"] = description
     logger.info("get_data_for_each_product is finished")
+
     return product_data
 
 
 async def gather_data(url: str):
     logger.info("gather_data function is started")
     async with aiohttp.ClientSession() as session:
-        response = await session.get(url, headers=settings.HEADERS)
+        response = await session.get(url, headers=environment.settings.HEADERS)
         soup = BeautifulSoup(await response.text(), "lxml")
         number_of_products = int(
             soup.find("span", class_="d-catalog-header__product-counter").text.split()[0]

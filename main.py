@@ -2,14 +2,11 @@ import logging.config
 
 from fastapi import FastAPI
 
-from config.dev import settings, LOGGING_CONFIG
+from routers import product
+from settings import environment
+logging.config.dictConfig(environment.settings.LOGGING_CONFIG)
 
-logging.config.dictConfig(LOGGING_CONFIG)
+app = FastAPI(title=environment.settings.PROJECT_NAME)
 
-app = FastAPI(title=settings.PROJECT_NAME)
+app.include_router(product.router, tags=["Products"], prefix="/api/products")
 
-
-#
-# @app.post("/")
-# async def get_url_for_parsing(url: UrlSchema):
-#     pass

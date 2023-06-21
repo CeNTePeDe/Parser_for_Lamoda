@@ -1,24 +1,17 @@
-from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional
+
+from pydantic import BaseModel, AnyUrl
 
 
-class ProductSchema(BaseModel):
-    name_product: str = Field()
-    picture_link: HttpUrl
-    price: float = Field()
-    product_detail_link: HttpUrl
-    description: dict
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "name_product": "example",
-                "picture_link": "https://www.example.by",
-                "price": 12345.0,
-                "product_detail_link": "https://www.example.by",
-                "description": {},
-            }
-        }
+class ProductModel(BaseModel):
+    name_product: str
+    picture_link: AnyUrl
+    price: str
+    product_detail_link: AnyUrl
+    description: str
+    characteristic: Optional[dict]
 
 
 class UrlSchema(BaseModel):
-    url: HttpUrl
+    url: AnyUrl
+
