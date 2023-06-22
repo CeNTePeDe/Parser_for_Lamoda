@@ -5,5 +5,3 @@ class SettingsProd(SettingsDev):
     pass
 
 
-settings: SettingsProd = SettingsProd()
-

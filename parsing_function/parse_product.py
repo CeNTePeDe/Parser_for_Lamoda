@@ -1,23 +1,31 @@
+import json
+
 import math
 import asyncio
 import logging
 
 import aiohttp
 from bs4 import BeautifulSoup
-
-from settings import environment
-from core.constant_variables import MAIN_PAGE
+from core.constant_variables import MAIN_PAGE, HEADERS
 
 logger = logging.getLogger(__name__)
 
+DATA: list = []
+
+
+def gather_data_to_list(product_data: list[dict]):
+    global DATA
+    DATA += product_data
+    return DATA
+
 
 async def get_page_data(
-    session: aiohttp.ClientSession, url: str, page: int
-) -> list[dict]:
+        session: aiohttp.ClientSession, url: str, page: int
+) -> None:
     url = f"{url}?page={page}"
     logger.info(f"get_page_data function is started on the page={page}, url={url}")
     product_data: list = []
-    async with session.get(url=url, headers=environment.settings.HEADERS) as response:
+    async with session.get(url=url, headers=HEADERS) as response:
         response_text = await response.text()
         html = BeautifulSoup(response_text, "lxml")
         product_items = html.find_all("div", class_="x-product-card__card")
@@ -50,16 +58,17 @@ async def get_page_data(
             product_data=product_data, session=session
         )
         logger.info(f"Parsing date is finished successfully on the page={page}")
-        return product_data
+        gather_data_to_list(product_data)
 
 
 async def get_data_for_each_product(
-    session: aiohttp.ClientSession, product_data: list[dict]
+        session: aiohttp.ClientSession, product_data: list[dict]
 ) -> list[dict]:
     logger.info("get_data_for_each_product is started")
     for product_item in product_data:
         async with session.get(
-            url=product_item["link_to_product"], headers=environment.settings.HEADERS
+                url=product_item["product_detail_link"],
+                headers=HEADERS,
         ) as response:
             response_text = await response.text()
             html_item_product = BeautifulSoup(response_text, "lxml")
@@ -85,14 +94,14 @@ async def get_data_for_each_product(
             product_item["characteristic"] = characteristic
             product_item["description"] = description
     logger.info("get_data_for_each_product is finished")
-
+    logger.info(f"{product_data}")
     return product_data
 
 
-async def gather_data(url: str):
+async def gather_data(url: str) -> list[dict]:
     logger.info("gather_data function is started")
     async with aiohttp.ClientSession() as session:
-        response = await session.get(url, headers=environment.settings.HEADERS)
+        response = await session.get(url, headers=HEADERS)
         soup = BeautifulSoup(await response.text(), "lxml")
         number_of_products = int(
             soup.find("span", class_="d-catalog-header__product-counter").text.split()[0]
@@ -105,4 +114,8 @@ async def gather_data(url: str):
             tasks.append(task)
 
         await asyncio.gather(*tasks)
+    logger.info(f"final_data {DATA}")
+
     logger.info("gather_data is finished successfully")
+    return DATA
+

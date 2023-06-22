@@ -19,9 +19,6 @@ class SettingsDev(BaseSettings):
     # MongodDB Collections
     PRODUCT_COLLECTION = "products"
 
-    USER_AGENT: str = os.environ.get("USER_AGENT")
-    HEADERS: dict = {"User-Agent": os.environ.get("USER_AGENT")}
-
     LOGGING_CONFIG: dict = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -48,6 +45,4 @@ class SettingsDev(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
 
-
-settings: SettingsDev = SettingsDev()
 

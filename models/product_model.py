@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel, AnyUrl
 
 
@@ -8,10 +6,7 @@ class ProductModel(BaseModel):
     picture_link: AnyUrl
     price: str
     product_detail_link: AnyUrl
+    characteristic: dict
     description: str
-    characteristic: Optional[dict]
 
-
-class UrlSchema(BaseModel):
-    url: AnyUrl
 
