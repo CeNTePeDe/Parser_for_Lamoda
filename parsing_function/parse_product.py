@@ -5,8 +5,9 @@ import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
-from settings import environment
+
 from core.constant_variables import MAIN_PAGE
+from main import settings
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ async def get_page_data(
     url = f"{url}?page={page}"
     logger.info(f"get_page_data function is started on the page={page}, url={url}")
     product_data: list = []
-    async with session.get(url=url, headers=environment.settings.HEADERS) as response:
+    async with session.get(url=url, headers=settings.HEADERS) as response:
         response_text = await response.text()
         html = BeautifulSoup(response_text, "lxml")
         product_items = html.find_all("div", class_="x-product-card__card")
@@ -59,7 +60,7 @@ async def get_data_for_each_product(
     logger.info("get_data_for_each_product is started")
     for product_item in product_data:
         async with session.get(
-            url=product_item["link_to_product"], headers=environment.settings.HEADERS
+            url=product_item["link_to_product"], headers=settings.HEADERS
         ) as response:
             response_text = await response.text()
             html_item_product = BeautifulSoup(response_text, "lxml")
@@ -92,7 +93,7 @@ async def get_data_for_each_product(
 async def gather_data(url: str):
     logger.info("gather_data function is started")
     async with aiohttp.ClientSession() as session:
-        response = await session.get(url, headers=environment.settings.HEADERS)
+        response = await session.get(url, headers=settings.HEADERS)
         soup = BeautifulSoup(await response.text(), "lxml")
         number_of_products = int(
             soup.find("span", class_="d-catalog-header__product-counter").text.split()[0]
@@ -106,3 +107,4 @@ async def gather_data(url: str):
 
         await asyncio.gather(*tasks)
     logger.info("gather_data is finished successfully")
+

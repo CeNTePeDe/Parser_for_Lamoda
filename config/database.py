@@ -1,10 +1,10 @@
 from pymongo import MongoClient
 
-from settings import environment
+from main import settings
 
-client = MongoClient(environment.settings.MONGO_URL)
+client = MongoClient(settings.MONGO_URL)
 
-db = client[environment.settings.MONGODB_DB]
+db = client[settings.MONGODB_DB]
 
-collection = db.get_collection(environment.settings.PRODUCT_COLLECTION)
+collection = db.get_collection(settings.PRODUCT_COLLECTION)
 

@@ -1,12 +1,14 @@
 import logging.config
+import os
 
 from fastapi import FastAPI
 
-from routers import product
-from settings import environment
-logging.config.dictConfig(environment.settings.LOGGING_CONFIG)
+from settings import init_settings
 
-app = FastAPI(title=environment.settings.PROJECT_NAME)
+env = os.environ.setdefault("APPLICATION_CONFIG", "dev")
+settings = init_settings(env)
 
-app.include_router(product.router, tags=["Products"], prefix="/api/products")
+logging.config.dictConfig(settings.LOGGING_CONFIG)
+
+app = FastAPI(title=settings.PROJECT_NAME)
 

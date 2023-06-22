@@ -5,5 +5,3 @@ class SettingsStage(SettingsDev):
     pass
 
 
-settings: SettingsStage = SettingsStage()
-
