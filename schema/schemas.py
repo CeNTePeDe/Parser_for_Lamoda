@@ -1,4 +1,4 @@
-def product_serializer(product) -> dict:
+def serialize_product(product) -> dict:
     return {
         "name_product": product["name_product"],
         "picture_link": product["picture_link"],
@@ -9,14 +9,14 @@ def product_serializer(product) -> dict:
     }
 
 
-def list_product_serializer(products) -> list:
-    return [product_serializer(product) for product in products]
+def serialize_list_of_products(products) -> list:
+    return [serialize_product(product) for product in products]
 
 
-def serializer_products_by_url(data)->dict:
+def serialize_products_with_url(data)->dict:
     return {
         "id": str(data["_id"]),
         "url": data["url"],
-        "products": list_product_serializer(data["products"])
+        "products": serialize_list_of_products(data["products"])
     }
 

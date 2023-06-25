@@ -1,27 +1,18 @@
-import json
-
 import math
 import asyncio
 import logging
 
 import aiohttp
 from bs4 import BeautifulSoup
+
 from core.constant_variables import MAIN_PAGE, HEADERS
 
 logger = logging.getLogger(__name__)
 
-DATA: list = []
-
-
-def gather_data_to_list(product_data: list[dict]):
-    global DATA
-    DATA += product_data
-    return DATA
-
 
 async def get_page_data(
         session: aiohttp.ClientSession, url: str, page: int
-) -> None:
+) -> list[dict]:
     url = f"{url}?page={page}"
     logger.info(f"get_page_data function is started on the page={page}, url={url}")
     product_data: list = []
@@ -58,7 +49,7 @@ async def get_page_data(
             product_data=product_data, session=session
         )
         logger.info(f"Parsing date is finished successfully on the page={page}")
-        gather_data_to_list(product_data)
+        return product_data
 
 
 async def get_data_for_each_product(
@@ -98,7 +89,7 @@ async def get_data_for_each_product(
     return product_data
 
 
-async def gather_data(url: str) -> list[dict]:
+async def gather_data(url: str):
     logger.info("gather_data function is started")
     async with aiohttp.ClientSession() as session:
         response = await session.get(url, headers=HEADERS)
@@ -113,9 +104,11 @@ async def gather_data(url: str) -> list[dict]:
             task = asyncio.create_task(get_page_data(session, url, page=page))
             tasks.append(task)
 
-        await asyncio.gather(*tasks)
-    logger.info(f"final_data {DATA}")
+        results = await asyncio.gather(*tasks)
+        combined_list_of_products = []
+        for product in results:
+            combined_list_of_products.extend(product)
+        logger.info(f"gather_data is finished successfully {combined_list_of_products}")
 
-    logger.info("gather_data is finished successfully")
-    return DATA
+        return combined_list_of_products
 

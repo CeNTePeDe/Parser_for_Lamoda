@@ -1,10 +1,11 @@
-import logging.config
 import os
 from typing import Union, Optional
+import logging.config
 
 from fastapi import FastAPI
-from config import SettingsDev, SettingsProd, SettingsStage
 
+from config import SettingsDev, SettingsProd, SettingsStage
+from controllers.exception_handler import handle_exception
 from routers.product import routers
 
 
@@ -23,5 +24,6 @@ logging.config.dictConfig(settings.LOGGING_CONFIG)
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
+app.add_exception_handler(Exception, handle_exception)
 app.include_router(routers, tags=["Products"], prefix="/api/products")
 
