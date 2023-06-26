@@ -5,7 +5,7 @@ import logging.config
 from fastapi import FastAPI
 
 from config import SettingsDev, SettingsProd, SettingsStage
-from core.exception import exception_404_handler
+from core.exception_handler import exception_404_handler
 from routers.product import routers
 
 
