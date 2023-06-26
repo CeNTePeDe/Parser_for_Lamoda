@@ -5,7 +5,10 @@ import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
-from core.constant_variables import MAIN_PAGE, HEADERS
+from core.constant_variables import (MAIN_PAGE,
+                                     HEADERS,
+                                     NUMBER_OF_PRODUCT_PER_PAGE)
+from core.exception import InvalidUrlInputError
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +97,11 @@ async def gather_data(url: str):
     async with aiohttp.ClientSession() as session:
         response = await session.get(url, headers=HEADERS)
         soup = BeautifulSoup(await response.text(), "lxml")
-        number_of_products = int(
-            soup.find("span", class_="d-catalog-header__product-counter").text.split()[0]
-        )
-        pages_count = math.ceil(number_of_products / 60)
+        number_of_products_locator = soup.find("span", class_="d-catalog-header__product-counter")
+        if number_of_products_locator is None:
+            raise InvalidUrlInputError(name=url)
+        total_number_of_products=int(number_of_products_locator.text.split()[0])
+        pages_count = math.ceil(total_number_of_products / NUMBER_OF_PRODUCT_PER_PAGE)
         logger.info(f"total pages = {pages_count}")
         tasks = []
         for page in range(1, pages_count + 1):

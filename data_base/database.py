@@ -17,7 +17,7 @@ class ProductDAO:
         self.db = self.client["product_db"]
         self.collection = self.db["products"]
 
-    def insert_products(self, url: AnyUrl, products) -> None:
+    def insert_products(self, url: AnyUrl, products: list[dict]) -> None:
         logger.info("run insert function")
         for product in products:
             self.collection.update_one({'url': url}, {'$push': {'products': product}}, upsert=True)

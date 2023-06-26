@@ -5,7 +5,7 @@ import logging.config
 from fastapi import FastAPI
 
 from config import SettingsDev, SettingsProd, SettingsStage
-from controllers.exception_handler import handle_exception
+from core.exception import exception_404_handler
 from routers.product import routers
 
 
@@ -24,6 +24,6 @@ logging.config.dictConfig(settings.LOGGING_CONFIG)
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-app.add_exception_handler(Exception, handle_exception)
+app.add_exception_handler(Exception, exception_404_handler)
 app.include_router(routers, tags=["Products"], prefix="/api/products")
 
