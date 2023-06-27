@@ -13,10 +13,9 @@ def serialize_list_of_products(products) -> list:
     return [serialize_product(product) for product in products]
 
 
-def serialize_products_with_url(data)->dict:
+def serialize_products_with_url(data) -> dict:
     return {
         "id": str(data["_id"]),
         "url": data["url"],
-        "products": serialize_list_of_products(data["products"])
+        "products": serialize_list_of_products(data["products"]),
     }
-

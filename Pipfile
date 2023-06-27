@@ -17,6 +17,7 @@ pytest = "*"
 aiohttp = "*"
 lxml = "*"
 isort = "*"
+fastapi-filter = {extras = ["mongoengine"], version = "*"}
 
 [dev-packages]
 

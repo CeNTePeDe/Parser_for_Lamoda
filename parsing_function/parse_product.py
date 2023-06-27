@@ -1,12 +1,11 @@
-import math
 import asyncio
 import logging
+import math
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from core.constant_variables import (MAIN_PAGE,
-                                     HEADERS,
+from core.constant_variables import (HEADERS, MAIN_PAGE,
                                      NUMBER_OF_PRODUCT_PER_PAGE)
 from core.exception import InvalidUrlInputError
 
@@ -14,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 async def get_page_data(
-        session: aiohttp.ClientSession, url: str, page: int
+    session: aiohttp.ClientSession, url: str, page: int
 ) -> list[dict]:
     url = f"{url}?page={page}"
     logger.info(f"get_page_data function is started on the page={page}, url={url}")
@@ -43,7 +42,7 @@ async def get_page_data(
                 {
                     "name_product": name,
                     "picture_link": picture_link,
-                    "price": price.text,
+                    "price": float(price.text.split()[0]),
                     "product_detail_link": scr_link,
                 }
             )
@@ -56,13 +55,13 @@ async def get_page_data(
 
 
 async def get_data_for_each_product(
-        session: aiohttp.ClientSession, product_data: list[dict]
+    session: aiohttp.ClientSession, product_data: list[dict]
 ) -> list[dict]:
     logger.info("get_data_for_each_product is started")
     for product_item in product_data:
         async with session.get(
-                url=product_item["product_detail_link"],
-                headers=HEADERS,
+            url=product_item["product_detail_link"],
+            headers=HEADERS,
         ) as response:
             response_text = await response.text()
             html_item_product = BeautifulSoup(response_text, "lxml")
@@ -97,10 +96,12 @@ async def gather_data(url: str):
     async with aiohttp.ClientSession() as session:
         response = await session.get(url, headers=HEADERS)
         soup = BeautifulSoup(await response.text(), "lxml")
-        number_of_products_locator = soup.find("span", class_="d-catalog-header__product-counter")
+        number_of_products_locator = soup.find(
+            "span", class_="d-catalog-header__product-counter"
+        )
         if number_of_products_locator is None:
             raise InvalidUrlInputError(name=url)
-        total_number_of_products=int(number_of_products_locator.text.split()[0])
+        total_number_of_products = int(number_of_products_locator.text.split()[0])
         pages_count = math.ceil(total_number_of_products / NUMBER_OF_PRODUCT_PER_PAGE)
         logger.info(f"total pages = {pages_count}")
         tasks = []
@@ -112,7 +113,8 @@ async def gather_data(url: str):
         combined_list_of_products = []
         for product in results:
             combined_list_of_products.extend(product)
-        logger.info(f"gather_data is finished successfully {combined_list_of_products}")
+        logger.info(
+            f"gather_data is finished successfully {combined_list_of_products}, {len(combined_list_of_products)}"
+        )
 
         return combined_list_of_products
-
