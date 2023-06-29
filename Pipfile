@@ -18,6 +18,7 @@ aiohttp = "*"
 lxml = "*"
 isort = "*"
 fastapi-filter = {extras = ["mongoengine"], version = "*"}
+pre-commit = "*"
 
 [dev-packages]
 

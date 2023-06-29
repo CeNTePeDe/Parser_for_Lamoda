@@ -1,6 +1,10 @@
 from pydantic import AnyUrl, BaseModel
 
 
+class CategoryModel(BaseModel):
+    category: str
+
+
 class ProductModel(BaseModel):
     name_product: str
     picture_link: AnyUrl
@@ -8,8 +12,4 @@ class ProductModel(BaseModel):
     product_detail_link: AnyUrl
     characteristic: dict
     description: str
-
-
-class UrlModel(BaseModel):
-    url: AnyUrl
-    products: list[ProductModel]
+    category: CategoryModel
