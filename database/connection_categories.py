@@ -1,22 +1,25 @@
 import logging
+from typing import Any, Mapping
 
-from pymongo import MongoClient
+from bson import ObjectId
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO
+from core.constant_variables import db
+from models.product_models import CategoryModel
 
 logger = logging.getLogger(__name__)
-CLIENT = MongoClient("mongodb://user:1111@mongo:27017")
-DB = CLIENT["product_db"]
 
 
 class CategoryDAO(AbstractDAO):
     collection: Collection
 
     def __init__(self):
-        self.collection = DB["category"]
+        self.collection = db["categories"]
+        super().__init__(self.collection)
 
-    def create(self, category_dict: dict):
+    def create_item(self, category: CategoryModel) -> ObjectId:
+        category_dict = category.dict()
         category = self.collection.find_one({"category": category_dict["category"]})
         if category is not None:
             logger.info(f"category id {category['_id']}")
@@ -27,22 +30,23 @@ class CategoryDAO(AbstractDAO):
             logger.info(f"category inserted {category.inserted_id}")
             return category.inserted_id
 
-    def get(self):
-        categories = list(self.collection.find())
-        logger.info(f"all categories {categories}")
+    def get_all_item(self) -> Any:
+        categories = self.collection.find()
         return categories
 
-    def update(self, category_old_name, category_new_name):
-        category = {"category": category_old_name}
-        result = self.collection.update_many(
-            category, {"$set": {"category": category_new_name}}
-        )
-        if result.modified_count > 0:
-            return {"message": "Update document"}
-        else:
-            return {"message": "Document not found"}
+    def get_item(self, category_id: str) -> Mapping[str, Any]:
+        cat_id = ObjectId(category_id)
+        category = self.collection.find_one({"_id": {"$eq": cat_id}})
+        return category
 
-    def delete(self, category_name):
-        category = {"category": category_name}
-        result = self.collection.delete_many(category)
-        return {"deleted": result.deleted_count}
+    def update_item(self, category_id: str, category: CategoryModel) -> int:
+        cat_id = ObjectId(category_id)
+        category_updated = self.collection.update_one(
+            {"_id": cat_id}, {"$set": category.dict()}
+        )
+        return category_updated.modified_count
+
+    def delete_item(self, category_id: str) -> int:
+        category_id = ObjectId(category_id)
+        result = self.collection.delete_one({"_id": {"$eq": category_id}})
+        return result.deleted_count

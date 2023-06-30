@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import math
+from decimal import Decimal
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -42,7 +43,7 @@ async def get_page_data(
                 {
                     "name_product": name,
                     "picture_link": picture_link,
-                    "price": float(price.text.split()[0]),
+                    "price": Decimal(price.text.split()[0]),
                     "product_detail_link": scr_link,
                 }
             )

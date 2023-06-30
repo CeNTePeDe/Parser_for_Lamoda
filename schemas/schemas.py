@@ -16,7 +16,7 @@ def serialize_product(product) -> dict:
         "id": str(product["_id"]),
         "name_product": product["name_product"],
         "picture_link": product["picture_link"],
-        "price": product["price"],
+        "price": str(product["price"]),
         "product_detail_link": product["product_detail_link"],
         "characteristic": product["characteristic"],
         "description": product["description"],

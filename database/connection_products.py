@@ -1,43 +1,48 @@
 import logging
+from typing import Any, Mapping
 
 from bson import ObjectId
-from pymongo import MongoClient
 from pymongo.collection import Collection
+from pymongo.cursor import Cursor
 
 from core.base_class import AbstractDAO
+from core.constant_variables import db
+from models.product_models import ProductModel
 
 logger = logging.getLogger(__name__)
-CLIENT = MongoClient("mongodb://user:1111@mongo:27017")
-DB = CLIENT["product_db"]
 
 
 class ProductDAO(AbstractDAO):
     collection: Collection
+    name_collection = "products"
 
     def __init__(self):
-        self.collection = DB["products"]
+        self.collection = db["products"]
+        super().__init__(self.collection)
 
-    def get(self):
+    def get_all_item(self) -> Cursor:
         return self.collection.find()
 
-    def create(self, product: dict):
-        logger.info("created_method is started")
-        self.collection.insert_one(product)
-        logger.info("created method is finished")
+    def get_item(self, product_id: str) -> Mapping[str, Any]:
+        prod_id = ObjectId(product_id)
+        product = self.collection.find_one({"_id": {"$eq": prod_id}})
+        return product
 
-    def update(self, _id: str, new_price: float) -> dict:
-        product_with_old_price = self.collection.find_one({"_id": ObjectId(_id)})
-        updated_product = self.collection.update_many(
-            product_with_old_price, {"$set": {"price": new_price}}
+    def create_item(self, product: Any) -> ObjectId:
+        logger.info("created_product method is started")
+        price_old = str(product.pop("price"))
+        product["price"] = str(price_old)
+        product = self.collection.insert_one(product)
+        return product.inserted_id
+
+    def update_item(self, product_id: str, product: ProductModel) -> int:
+        prod_id = ObjectId(product_id)
+        product_update = self.collection.update_one(
+            {"_id": prod_id}, {"$set": product.dict()}
         )
-        if updated_product.modified_count > 0:
-            return {"message": "Update document"}
-        else:
-            return {"message": "Document not found"}
+        return product_update.modified_count
 
-    def delete(self, id: ObjectId):
-        deleted_product = self.collection.delete_one({"_id": id})
-        if deleted_product.deleted_count == 1:
-            return {"message": "Product is deleted"}
-        else:
-            return {"message": "Document not found"}
+    def delete_item(self, product_id: str) -> int:
+        prod_id = ObjectId(product_id)
+        deleted_product = self.collection.delete_one({"_id": {"$eq": prod_id}})
+        return deleted_product.deleted_count

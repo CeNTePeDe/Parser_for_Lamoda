@@ -15,4 +15,3 @@ __pycache__
 /.idea/.gitignore
 /.env
 
-/.pre-commit-config.yaml
