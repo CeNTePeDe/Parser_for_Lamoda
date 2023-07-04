@@ -19,12 +19,12 @@ class AbstractDAO(ABC):
 
     @abstractmethod
     def create_item(self, item):
-        pass
+        raise NotImplementedError("Subclasses must implement create_item method")
 
     @abstractmethod
     def update_item(self, _id, item):
-        pass
+        raise NotImplementedError("Subclasses must implement update_item method")
 
     @abstractmethod
     def delete_item(self, _id):
-        pass
+        raise NotImplementedError("Subclasses must implement delete_item method")

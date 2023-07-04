@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Mapping
 
 from bson import ObjectId
 from pymongo.collection import Collection
@@ -18,26 +17,27 @@ class CategoryDAO(AbstractDAO):
         self.collection = db["categories"]
         super().__init__(self.collection)
 
-    def create_item(self, category: CategoryModel) -> ObjectId:
+    def get_item(self, category_id: str) -> CategoryModel:
+        cat_id = ObjectId(category_id)
+        category = self.collection.find_one({"_id": cat_id})
+        return CategoryModel(**category)
+
+    def create_item(self, category: CategoryModel) -> CategoryModel:
         category_dict = category.dict()
         category = self.collection.find_one({"category": category_dict["category"]})
         if category is not None:
             logger.info(f"category id {category['_id']}")
-            return category["_id"]
-        else:
-            logger.info(f"category look like this {category_dict}")
-            category = self.collection.insert_one(category_dict)
-            logger.info(f"category inserted {category.inserted_id}")
-            return category.inserted_id
+            return CategoryModel(**category)
 
-    def get_all_item(self) -> Any:
-        categories = self.collection.find()
-        return categories
+        logger.info(f"category look like this {category_dict}")
+        category = self.collection.insert_one(category_dict)
+        logger.info(f"category inserted {category.inserted_id}")
+        return self.get_item(category.inserted_id)
 
-    def get_item(self, category_id: str) -> Mapping[str, Any]:
-        cat_id = ObjectId(category_id)
-        category = self.collection.find_one({"_id": {"$eq": cat_id}})
-        return category
+    def get_all_item(self) -> list[CategoryModel]:
+        collection = self.collection.find()
+        list_collection = [CategoryModel(**item) for item in collection]
+        return list_collection
 
     def update_item(self, category_id: str, category: CategoryModel) -> int:
         cat_id = ObjectId(category_id)

@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 MAIN_PAGE: str = "https://www.lamoda.by"
 
-NUMBER_OF_PRODUCT_PER_PAGE = 60
+NUMBER_OF_PRODUCT_PER_PAGE: int = 60
 
 MAIN_PAGE_MEN: str = "https://www.lamoda.by/men-home/"
 
