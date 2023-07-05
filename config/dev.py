@@ -19,6 +19,9 @@ class SettingsDev(BaseSettings):
     # MongodDB Collections
     PRODUCT_COLLECTION = "products"
 
+    CLIENT_ID: str = os.environ.get("ID")
+    AUTHORIZATION: str = os.environ.get("TOKEN")
+
     LOGGING_CONFIG: dict = {
         "version": 1,
         "disable_existing_loggers": False,
