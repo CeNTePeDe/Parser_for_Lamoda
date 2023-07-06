@@ -1,10 +1,10 @@
 import logging
 
+from fastapi import HTTPException
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO
 from core.constant_variables import db
-from core.exception import InvalidIdInputError
 from models.streamers_models import StreamerIn, StreamerOut
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class StreamerDAO(AbstractDAO):
     def get_item(self, id: str) -> StreamerIn:
         streamer_data = self.collection.find_one({"id": id})
         if streamer_data is None:
-            raise InvalidIdInputError(id=id)
+            raise HTTPException(status_code=404, detail="Streamer not found")
         return StreamerIn(**streamer_data)
 
     def create_item(self, streamer_data: StreamerIn):
@@ -31,10 +31,10 @@ class StreamerDAO(AbstractDAO):
             new_streamer = self.collection.insert_one(streamer_dict)
             logger.info(f"new_streamer {new_streamer}")
             return new_streamer
-        else:
-            updated_streamer = self.update_item(streamer_dict["id"], streamer_data)
-            logger.info(f"updated streamer {updated_streamer}")
-            return updated_streamer
+
+        updated_streamer = self.update_item(streamer_dict["id"], streamer_data)
+        logger.info(f"updated streamer {updated_streamer}")
+        return updated_streamer
 
     def sort_item(self) -> list[StreamerOut]:
         sort_streamer = self.collection.find().sort("viewer_count", -1)
@@ -49,8 +49,8 @@ class StreamerDAO(AbstractDAO):
         streamer_update = self.collection.update_one(
             {"id": id}, {"$set": streamer_data.dict()}
         )
-        if streamer_update.modified_count == 0:
-            raise InvalidIdInputError(id=id)
+        if streamer_update is None:
+            raise HTTPException(status_code=404, detail="Streamer not found")
         return streamer_update.modified_count
 
     def delete_item(self, id: str) -> int:

@@ -16,8 +16,3 @@ db = client["product_db"]
 
 
 BASE_URL: str = "https://api.twitch.tv/helix/streams"
-
-HEADERS_TWITCH: dict = {
-    "Client-ID": os.environ.get("ID"),
-    "Authorization": os.environ.get("TOKEN"),
-}
