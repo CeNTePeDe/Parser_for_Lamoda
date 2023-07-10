@@ -7,8 +7,8 @@ from main import app
 
 @pytest.fixture()
 def client():
-    with TestClient(app) as c:
-        yield c
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 @pytest.fixture()
@@ -17,7 +17,7 @@ def mongo_mock(monkeypatch):
     db = client.get_database("CategoryDB")
     col = db.get_collection("test_db")
 
-    def fake_db():
+    def test_db():
         return db
 
-    monkeypatch.setattr("core.constant_variables.db", fake_db)
+    monkeypatch.setattr("core.constant_variables.db", test_db)

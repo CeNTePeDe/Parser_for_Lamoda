@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from fastapi import HTTPException
 from pymongo.collection import Collection
@@ -14,10 +15,10 @@ class ProductDAO(AbstractDAO):
     collection: Collection
 
     def __init__(self):
-        self.collection = db["products"]
+        self.collection: Collection = db["products"]
         super().__init__(self.collection)
 
-    def get_all_item(self) -> list[ProductModel]:
+    def get_all_items(self) -> list[ProductModel]:
         collection = self.collection.find()
         list_collection = []
         for item in collection:
@@ -26,10 +27,10 @@ class ProductDAO(AbstractDAO):
 
         return list_collection
 
-    def get_item(self, product_id: str) -> ProductModel:
+    def get_item(self, product_id: str) -> Optional[ProductModel]:
         product = self.collection.find_one({"product_id": product_id})
         if product is None:
-            raise HTTPException(status_code=404, detail="Product not found")
+            return None
         return ProductModel(**product)
 
     def create_item(self, product: ProductModel) -> ProductModel:

@@ -8,7 +8,7 @@ class AbstractDAO(ABC):
         self.collection = collection
 
     @abstractmethod
-    def get_all_item(self):
+    def get_all_items(self):
         return self.collection.find()
 
     @abstractmethod

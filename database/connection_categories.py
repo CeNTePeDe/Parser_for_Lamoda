@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from fastapi import HTTPException
 from pymongo.collection import Collection
@@ -13,14 +14,14 @@ logger = logging.getLogger(__name__)
 class CategoryDAO(AbstractDAO):
     collection: Collection
 
-    def __init__(self, collection):
-        self.collection = db[collection]
+    def __init__(self, collection: str):
+        self.collection: Collection = db[collection]
         super().__init__(self.collection)
 
-    def get_item(self, category: str) -> CategoryModel:
+    def get_item(self, category: str) -> Optional[CategoryModel]:
         category = self.collection.find_one({"category": category})
         if category is None:
-            raise HTTPException(status_code=404, detail="Document not found")
+            return None
         return CategoryModel(**category)
 
     def create_item(self, category: CategoryModel) -> CategoryModel:
@@ -36,17 +37,17 @@ class CategoryDAO(AbstractDAO):
         category_model = self.collection.find_one({"_id": category.inserted_id})
         return CategoryModel(**category_model)
 
-    def get_all_item(self) -> list[CategoryModel]:
+    def get_all_items(self) -> list[CategoryModel]:
         collection = self.collection.find()
         list_collection = [CategoryModel(**item) for item in collection]
         return list_collection
 
-    def update_item(self, category_name: str, category: CategoryModel) -> int:
+    def update_item(self, category_name: str, category: CategoryModel) -> Optional[int]:
         category_updated = self.collection.update_one(
             {"category": category_name}, {"$set": category.dict()}
         )
         if category_updated is None:
-            raise HTTPException(status_code=404, detail="Category not found")
+            return None
         return category_updated.modified_count
 
     def delete_item(self, category: str) -> int:

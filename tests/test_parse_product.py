@@ -1,18 +1,18 @@
 import asyncio
 
+from core.constant_variables import (
+    EXPECTED_RESULT_OF_PRODUCTS,
+    URL_FOR_PARSER,
+    URL_PARSER_FUNCTION,
+)
 from parsers.parse_product import gather_data
-
-URL = "http://localhost:8000/api/products/parser"
-url_for_parser = "https://www.lamoda.by/c/4170/clothes-maternityclothes/"
 
 
 def test_get_product_parse(mongo_mock):
-    expected_result = 83
-    assert len(asyncio.run(gather_data(url_for_parser))) == expected_result
-
+    assert len(asyncio.run(gather_data(URL_FOR_PARSER))) == EXPECTED_RESULT_OF_PRODUCTS
 
 
 def test_post_products(client, mongo_mock):
-    params = {"url": url_for_parser}
-    response = client.post(url=URL, params=params)
+    params = {"url": URL_FOR_PARSER}
+    response = client.post(url=URL_PARSER_FUNCTION, params=params)
     assert response.status_code == 201

@@ -13,3 +13,12 @@ HEADERS: dict = {
 
 client: MongoClient = MongoClient("mongodb://user:1111@mongo:27017")
 db = client["product_db"]
+
+
+# test constant
+URL_CATEGORIES: str = "http://localhost:8000/api/categories/"
+URL_PRODUCTS: str = "http://localhost:8000/api/products/"
+
+URL_PARSER_FUNCTION: str = "http://localhost:8000/api/products/parser"
+URL_FOR_PARSER: str = "https://www.lamoda.by/c/4170/clothes-maternityclothes/"
+EXPECTED_RESULT_OF_PRODUCTS: int = 83

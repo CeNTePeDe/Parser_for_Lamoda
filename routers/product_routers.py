@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
@@ -32,12 +32,15 @@ def post_products(url: AnyUrl) -> dict:
 
 @product_routers.get("/", status_code=status.HTTP_200_OK)
 async def get_products() -> list[ProductModel]:
-    return product_dao.get_all_item()
+    return product_dao.get_all_items()
 
 
 @product_routers.get("/{product_id}", status_code=status.HTTP_200_OK)
 async def get_product(product_id: str) -> ProductModel:
-    return product_dao.get_item(product_id)
+    product = product_dao.get_item(product_id)
+    if product is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return product
 
 
 @product_routers.post("/", status_code=status.HTTP_201_CREATED)
@@ -53,10 +56,13 @@ async def create_product(product: ProductModel) -> dict:
 @product_routers.put("/{product_id}", status_code=status.HTTP_200_OK)
 async def update_product(product_id: str, product: ProductModel) -> int:
     new_product = product_dao.update_item(product_id, product)
+    if new_product == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
     return new_product
 
 
 @product_routers.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_product(product_id: str) -> None:
-    product_dao.delete_item(product_id)
+    if product_dao.delete_item(product_id) == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
     logger.info("product is deleted")
