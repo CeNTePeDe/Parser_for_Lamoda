@@ -1,5 +1,3 @@
-import os
-
 from pymongo import MongoClient
 
 MAIN_PAGE: str = "https://www.lamoda.by"

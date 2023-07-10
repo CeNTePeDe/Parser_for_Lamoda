@@ -34,7 +34,7 @@ class CategoryDAO(AbstractDAO):
         logger.info(f"category inserted {category.inserted_id}")
         return self.get_item(category.inserted_id)
 
-    def get_all_item(self) -> list[CategoryModel]:
+    def get_all_items(self) -> list[CategoryModel]:
         collection = self.collection.find()
         list_collection = [CategoryModel(**item) for item in collection]
         return list_collection

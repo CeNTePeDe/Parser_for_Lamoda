@@ -16,7 +16,7 @@ class SettingsDev(BaseSettings):
     MONGO_URL: str = os.environ.get("MONGO_URL")
     MONGODB_DB: str = os.environ.get("MONGODB_DB")
 
-    # MongodDB Collections
+    # Mongo_DB Collections
     PRODUCT_COLLECTION = "products"
 
     HEADERS_TWITCH: dict = {

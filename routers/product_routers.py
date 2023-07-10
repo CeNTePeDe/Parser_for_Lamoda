@@ -29,7 +29,7 @@ def post_products(url: AnyUrl) -> None:
 
 @product_routers.get("/", status_code=status.HTTP_200_OK)
 async def get_products() -> list[ProductModel]:
-    return product_dao.get_all_item()
+    return product_dao.get_all_items()
 
 
 @product_routers.get("/product", status_code=status.HTTP_200_OK)

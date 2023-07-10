@@ -17,7 +17,7 @@ class ProductDAO(AbstractDAO):
         self.collection = db["products"]
         super().__init__(self.collection)
 
-    def get_all_item(self) -> list[ProductModel]:
+    def get_all_items(self) -> list[ProductModel]:
         collection = self.collection.find()
         list_collection = []
         for item in collection:
