@@ -14,7 +14,7 @@ category_dao = CategoryDAO()
 
 @category_routers.get("/", status_code=status.HTTP_200_OK)
 async def get_categories() -> list[CategoryModel]:
-    return category_dao.get_all_item()
+    return category_dao.get_all_items()
 
 
 @category_routers.get("/category", status_code=status.HTTP_200_OK)
