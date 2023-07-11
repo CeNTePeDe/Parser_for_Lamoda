@@ -19,6 +19,11 @@ class SettingsDev(BaseSettings):
     # Mongo_DB Collections
     PRODUCT_COLLECTION = "products"
 
+    HEADERS_TWITCH: dict = {
+        "Client-ID": os.environ.get("ID"),
+        "Authorization": os.environ.get("TOKEN"),
+    }
+
     LOGGING_CONFIG: dict = {
         "version": 1,
         "disable_existing_loggers": False,

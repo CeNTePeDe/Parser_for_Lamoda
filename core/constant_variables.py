@@ -15,6 +15,9 @@ client: MongoClient = MongoClient("mongodb://user:1111@mongo:27017")
 db = client["product_db"]
 
 
+BASE_URL: str = "https://api.twitch.tv/helix/streams"
+
+
 # test constant
 URL_CATEGORIES: str = "http://localhost:8000/api/categories/"
 URL_PRODUCTS: str = "http://localhost:8000/api/products/"
