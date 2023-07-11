@@ -6,8 +6,7 @@ from decimal import Decimal
 import aiohttp
 from bs4 import BeautifulSoup
 
-from core.constant_variables import (HEADERS, MAIN_PAGE,
-                                     NUMBER_OF_PRODUCT_PER_PAGE)
+from core.constant_variables import HEADERS, MAIN_PAGE, NUMBER_OF_PRODUCT_PER_PAGE
 from core.exception import InvalidUrlInputError
 
 logger = logging.getLogger(__name__)

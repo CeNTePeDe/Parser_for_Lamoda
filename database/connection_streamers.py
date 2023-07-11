@@ -49,10 +49,10 @@ class StreamerDAO(AbstractDAO):
         streamer_update = self.collection.update_one(
             {"id": id}, {"$set": streamer_data.dict()}
         )
-        if streamer_update is None:
+        if streamer_update.modified_count == 0:
             return None
         return streamer_update.modified_count
 
     def delete_item(self, id: str) -> int:
-        deleted_product = self.collection.delete_one({"id": {"$eq": id}})
+        deleted_product = self.collection.delete_one({"id": id})
         return deleted_product.deleted_count

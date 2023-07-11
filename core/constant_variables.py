@@ -12,5 +12,10 @@ HEADERS: dict = {
 client: MongoClient = MongoClient("mongodb://user:1111@mongo:27017")
 db = client["product_db"]
 
-
 BASE_URL: str = "https://api.twitch.tv/helix/streams"
+
+# test_constant
+
+URL_STREAMERS: str = "http://localhost:8000/api/streamers/"
+
+URL_STREAMERS_PARSE: str = "http://localhost:8000/api/streamers/parsing_streamers/"
