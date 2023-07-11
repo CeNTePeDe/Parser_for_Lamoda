@@ -1,12 +1,14 @@
-import asyncio
+import json
 import logging
+from decimal import Decimal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
+from kafka import KafkaConsumer
 from models.product_models import CategoryModel, ProductModel
-from parsers.parse_product import gather_data
+from parsers.kafka_connection import send_data_to_kafka
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +20,24 @@ category_dao = CategoryDAO(collection="categories")
 @product_routers.post("/parser", status_code=status.HTTP_201_CREATED)
 def post_products(url: AnyUrl) -> dict:
     logger.info("get url")
-    products = asyncio.run(gather_data(url))
+    send_data_to_kafka(url)
+    logger.info("retrieve data from kafka")
+    products = KafkaConsumer(
+        "product_parser",
+        auto_offset_reset="earliest",
+        bootstrap_servers="localhost:29092",
+        consumer_timeout_ms=1000,
+    )
     category = CategoryModel(category=url.split("/")[-2])
     for product in products:
+        product = json.loads(product.value)
         product_id = product["product_detail_link"].split("/")[-3]
+        price = Decimal(product.pop["price"])
         category_item = category_dao.create_item(category)
         product_dao.create_item(
-            ProductModel(**product, category=category_item, product_id=product_id)
+            ProductModel(
+                **product, price=price, category=category_item, product_id=product_id
+            )
         )
         logger.info(f"product is {product}")
     return {"message": "products are created"}

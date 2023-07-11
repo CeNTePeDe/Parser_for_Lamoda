@@ -19,9 +19,7 @@ class StreamerDAO(AbstractDAO):
 
     def get_item(self, id: str) -> Optional[StreamerIn]:
         streamer_data = self.collection.find_one({"id": id})
-        if streamer_data is None:
-            return None
-        return StreamerIn(**streamer_data)
+        return StreamerIn(**streamer_data) if streamer_data  else none
 
     def create_item(self, streamer_data: StreamerIn):
         streamer_dict = streamer_data.dict()
@@ -49,8 +47,6 @@ class StreamerDAO(AbstractDAO):
         streamer_update = self.collection.update_one(
             {"id": id}, {"$set": streamer_data.dict()}
         )
-        if streamer_update.modified_count == 0:
-            return None
         return streamer_update.modified_count
 
     def delete_item(self, id: str) -> int:

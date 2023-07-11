@@ -1,10 +1,7 @@
 import asyncio
 
-from core.constant_variables import (
-    EXPECTED_RESULT_OF_PRODUCTS,
-    URL_FOR_PARSER,
-    URL_PARSER_FUNCTION,
-)
+from core.constant_variables import (EXPECTED_RESULT_OF_PRODUCTS,
+                                     URL_FOR_PARSER, URL_PARSER_FUNCTION)
 from parsers.parse_product import gather_data
 
 
