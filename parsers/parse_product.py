@@ -6,8 +6,7 @@ from decimal import Decimal
 import aiohttp
 from bs4 import BeautifulSoup
 
-from core.constant_variables import (HEADERS, MAIN_PAGE,
-                                     NUMBER_OF_PRODUCT_PER_PAGE)
+from core.constant_variables import HEADERS, MAIN_PAGE, NUMBER_OF_PRODUCT_PER_PAGE
 from core.exception import InvalidUrlInputError
 
 logger = logging.getLogger(__name__)
@@ -87,6 +86,7 @@ async def get_data_for_each_product(
 
             product_item["characteristic"] = characteristic
             product_item["description"] = description
+
     logger.info("get_data_for_each_product is finished")
     logger.info(f"{product_data}")
     return product_data
@@ -114,8 +114,6 @@ async def gather_data(url: str):
         combined_list_of_products = []
         for product in results:
             combined_list_of_products.extend(product)
-        logger.info(
-            f"gather_data is finished successfully {combined_list_of_products}, {len(combined_list_of_products)}"
-        )
+        logger.info(f"gather_data is finished successfully {combined_list_of_products}")
 
         return combined_list_of_products

@@ -19,6 +19,10 @@ lxml = "*"
 isort = "*"
 fastapi-filter = {extras = ["mongoengine"], version = "*"}
 pre-commit = "*"
+pytest-asyncio = "*"
+httpx = "*"
+factory-boy = "*"
+mongomock = "*"
 
 [dev-packages]
 
