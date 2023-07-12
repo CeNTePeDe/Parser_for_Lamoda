@@ -9,8 +9,11 @@ HEADERS: dict = {
                     Chrome/114.0.0.0 Safari/537.36"
 }
 
-client: MongoClient = MongoClient("mongodb://user:1111@mongo:27017")
-db = client["product_db"]
+def get_db(db_name="product_db"):
+    client = MongoClient("mongodb://user:1111@mongo:27017")
+    db = client.get_database(db_name)
+    return db
+
 
 BASE_URL: str = "https://api.twitch.tv/helix/streams"
 

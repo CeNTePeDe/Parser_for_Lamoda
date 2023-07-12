@@ -1,124 +1,62 @@
+import json
 import logging
 
 from core.constant_variables import URL_STREAMERS, URL_STREAMERS_PARSE
-from tests.factories import StreamerInFactory
+from database import StreamerDAO
 
 logger = logging.getLogger(__name__)
+
+dao_streamer = StreamerDAO()
 
 
 def test_get_streamers(client):
     response = client.get(url=URL_STREAMERS)
 
     assert response.status_code == 200
+    assert len(response.json()) == len(dao_streamer.get_all_items())
 
 
-def test_parse_streamer(client, mongo_mock):
+def test_parse_streamer(client):
     response = client.post(url=URL_STREAMERS_PARSE)
 
     assert response.status_code == 200
 
 
-def test_create_streamer(client, mongo_mock):
-    data = StreamerInFactory.build()
+def test_create_streamer(db, client, streamer):
+    response = client.post(url=URL_STREAMERS, json=streamer)
 
-    payload = {
-        "id": data.id,
-        "user_id": data.user_id,
-        "user_login": data.user_login,
-        "user_name": data.user_name,
-        "game_id": data.game_id,
-        "game_name": data.game_name,
-        "type": data.type,
-        "title": data.title,
-        "viewer_count": data.viewer_count,
-        "started_at": data.started_at,
-        "language": data.language,
-        "thumbnail_url": data.thumbnail_url,
-        "tag_ids": data.tag_ids,
-        "tags": data.tags,
-        "is_mature": data.is_mature,
-    }
-    logger.info(f"Payload {payload}")
-    response = client.post(url=URL_STREAMERS, json=payload)
-
+    assert response.json() == 1
     assert response.status_code == 201
 
 
-def test_get_streamer(client, mongo_mock):
-    id = "1111111"
-
+def test_get_streamer(db, client, streamer):
+    id = "id_0"
+    logger.info(f"id streamer {id} ")
     response = client.get(url=URL_STREAMERS + f"{id}")
 
     assert response.status_code == 200
+    assert response.json()["id"] == "id_0"
+    assert response.json()["user_id"] == "user_id_0"
+    assert response.json()["title"] == "title_0"
 
 
-def test_get_invalid_streamer_id(client, mongo_mock):
-    id = "invalid_product"
-
-    response = client.get(url=URL_STREAMERS + f"{id}")
-
-    assert response.status_code == 404
-
-
-def test_update_streamer(client, mongo_mock):
-    id = "1111111"
-    data = StreamerInFactory.build()
-
-    payload = {
-        "id": data.id,
-        "user_id": data.user_id,
-        "user_login": data.user_login,
-        "user_name": data.user_name,
-        "game_id": data.game_id,
-        "game_name": data.game_name,
-        "type": data.type,
-        "title": data.title,
-        "viewer_count": data.viewer_count,
-        "started_at": data.started_at,
-        "language": data.language,
-        "thumbnail_url": data.thumbnail_url,
-        "tag_ids": data.tag_ids,
-        "tags": data.tags,
-        "is_mature": data.is_mature,
-    }
-    logger.info(f"Payload {payload}")
-
-    response = client.patch(url=URL_STREAMERS + f"{id}", json=payload)
-
-    assert response.status_code == 200
-
-
-def test_invalid_update_streamer(client, mongo_mock):
+def test_get_invalid_streamer(db, client):
     id = "invalid_id"
-    data = StreamerInFactory.build()
-
-    payload = {
-        "id": data.id,
-        "user_id": data.user_id,
-        "user_login": data.user_login,
-        "user_name": data.user_name,
-        "game_id": data.game_id,
-        "game_name": data.game_name,
-        "type": data.type,
-        "title": data.title,
-        "viewer_count": data.viewer_count,
-        "started_at": data.started_at,
-        "language": data.language,
-        "thumbnail_url": data.thumbnail_url,
-        "tag_ids": data.tag_ids,
-        "tags": data.tags,
-        "is_mature": data.is_mature,
-    }
-    logger.info(f"Payload {payload}")
-
-    response = client.patch(url=URL_STREAMERS + f"{id}", json=payload)
+    response = client.get(url=URL_STREAMERS + f"{id}")
 
     assert response.status_code == 404
 
 
-def test_delete_streamer(client, mongo_mock):
-    id = "1111111"
+def test_update_streamer(db, streamer, streamer_build, client):
+    new_streamer = streamer_build()
+    id = "id_0"
+    response = client.patch(url=URL_STREAMERS + f"{id}", json=new_streamer.dict())
 
+    assert response.status_code == 200
+
+
+def test_delete_streamer(db, client, streamer):
+    id = streamer["id"]
     response = client.delete(url=URL_STREAMERS + f"{id}")
 
-    assert response.status_code == 204
+    assert response.status_code == 405

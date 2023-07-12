@@ -4,10 +4,12 @@ from bson import ObjectId
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO
-from core.constant_variables import db
+from core.constant_variables import get_db
 from models.product_models import ProductModel
 
 logger = logging.getLogger(__name__)
+
+db = get_db()
 
 
 class ProductDAO(AbstractDAO):

@@ -12,8 +12,8 @@ class StreamerInFactory(factory.mongoengine.MongoEngineFactory):
     class Meta:
         model = StreamerIn
 
-    id = "1111111"
-    user_id = factory.LazyAttribute(lambda obj: faker.uuid4())
+    id = factory.Sequence(lambda n: f"id_{n}")
+    user_id = factory.Sequence(lambda n: f"user_id_{n}")
     user_login = factory.Sequence(lambda n: f"user_login_{n}")
     user_name = factory.Sequence(lambda n: f"user_name_{n}")
     game_id = factory.Sequence(lambda n: f"game_id_{n}")

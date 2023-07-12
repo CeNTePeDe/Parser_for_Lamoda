@@ -4,10 +4,12 @@ from typing import Optional
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO
-from core.constant_variables import db
+from core.constant_variables import get_db
 from models.streamers_models import StreamerIn, StreamerOut
 
 logger = logging.getLogger(__name__)
+
+db = get_db()
 
 
 class StreamerDAO(AbstractDAO):
