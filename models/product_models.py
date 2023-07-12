@@ -16,3 +16,4 @@ class ProductModel(BaseModel):
     characteristic: dict
     description: str
     category: CategoryModel
+    product_id: str
