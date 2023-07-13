@@ -1,11 +1,14 @@
+import json
 import logging
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
 
 from database import StreamerDAO
+from kafka import KafkaConsumer
+from kafka_producers.kafka_streamers import send_data_to_kafka_streamers
 from models.streamers_models import StreamerIn, StreamerOut
-from parsers.parse_streamer import get_data_stream
+from parsers.parse_streamer import get_data_streams
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +23,24 @@ async def get_streamers() -> list[StreamerOut]:
 
 @streamer_routers.post("/parsing_streamers/", status_code=status.HTTP_200_OK)
 async def get_streamers_from_twitch(offset: Optional[int] = None) -> list[StreamerOut]:
-    list_streamers = get_data_stream(offset=offset)
-    for streamer in list_streamers:
+    from main import settings
+
+    list_streamers = get_data_streams(offset=offset)
+    logger.info("send data to kafka")
+    send_data_to_kafka_streamers(list_streamers)
+
+    streamers = KafkaConsumer(
+        settings.TOPIC_STREAMER,
+        auto_offset_reset=settings.AUTO_OFFSET_RESET,
+        bootstrap_servers=settings.KAFKA_URL,
+        consumer_timeout_ms=settings.CONSUMER_TIMEOUT_MS,
+    )
+
+    for streamer in streamers:
+        streamer = json.loads(streamer.value)
         streamer_dao.create_item(StreamerIn(**streamer))
         logger.info(f"streamer is {streamer}")
+
     return streamer_dao.get_all_items()
 
 

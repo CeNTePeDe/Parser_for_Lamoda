@@ -1,7 +1,6 @@
 import logging
 from typing import Optional
 
-from fastapi import HTTPException
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO
@@ -33,15 +32,24 @@ class ProductDAO(AbstractDAO):
             return None
         return ProductModel(**product)
 
-    def create_item(self, product: ProductModel) -> ProductModel:
+    def create_item(self, product: ProductModel) -> int:
         logger.info("created_product method is started")
         product_dict = product.dict()
-        logger.info(f"product dict is {product_dict}")
         price_old = str(product_dict.pop("price"))
         product_dict["price"] = str(price_old)
-        logger.info(f"the second product dict is {product_dict}")
-        product = self.collection.insert_one(product_dict)
-        return product.inserted_id
+        check_product = self.collection.find_one(
+            {"product_id": product_dict["product_id"]}
+        )
+        if check_product is None:
+            logger.info(f"the second product dict is {product_dict}")
+            product = self.collection.insert_one(product_dict)
+            logger.info("created product")
+            return product.inserted_id
+        logger.info("updated product")
+        update_product = self.collection.update_one(
+            {"product_id": product_dict["product_id"]}, {"$set": product_dict}
+        )
+        return update_product.modified_count
 
     def update_item(self, product_id: str, product: ProductModel) -> int:
         product_update = self.collection.update_one(

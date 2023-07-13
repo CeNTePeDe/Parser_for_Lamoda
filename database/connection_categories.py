@@ -1,7 +1,6 @@
 import logging
 from typing import Optional
 
-from fastapi import HTTPException
 from pymongo.collection import Collection
 
 from core.base_class import AbstractDAO

@@ -19,7 +19,7 @@ class StreamerDAO(AbstractDAO):
 
     def get_item(self, id: str) -> Optional[StreamerIn]:
         streamer_data = self.collection.find_one({"id": id})
-        return StreamerIn(**streamer_data) if streamer_data  else none
+        return StreamerIn(**streamer_data) if streamer_data else None
 
     def create_item(self, streamer_data: StreamerIn):
         streamer_dict = streamer_data.dict()

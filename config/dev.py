@@ -18,6 +18,12 @@ class SettingsDev(BaseSettings):
 
     # Mongo_DB Collections
     PRODUCT_COLLECTION = "products"
+    # Kafka
+    KAFKA_URL: str = os.environ.get("KAFKA_URL")
+    TOPIC_PRODUCT: str = "product_parser"
+    TOPIC_STREAMER: str = "streamer_parser"
+    CONSUMER_TIMEOUT_MS: int = 1000
+    AUTO_OFFSET_RESET: str = "earliest"
 
     HEADERS_TWITCH: dict = {
         "Client-ID": os.environ.get("ID"),

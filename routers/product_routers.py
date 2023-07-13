@@ -7,8 +7,8 @@ from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
 from kafka import KafkaConsumer
+from kafka_producers.kafka_products import send_data_to_kafka_products
 from models.product_models import CategoryModel, ProductModel
-from parsers.kafka_connection import send_data_to_kafka
 
 logger = logging.getLogger(__name__)
 
@@ -19,20 +19,24 @@ category_dao = CategoryDAO(collection="categories")
 
 @product_routers.post("/parser", status_code=status.HTTP_201_CREATED)
 def post_products(url: AnyUrl) -> dict:
+    from main import settings
+
     logger.info("get url")
-    send_data_to_kafka(url)
+    send_data_to_kafka_products(url)
     logger.info("retrieve data from kafka")
     products = KafkaConsumer(
-        "product_parser",
-        auto_offset_reset="earliest",
-        bootstrap_servers="localhost:29092",
-        consumer_timeout_ms=1000,
+        settings.TOPIC_PRODUCT,
+        bootstrap_servers=settings.KAFKA_URL,
+        auto_offset_reset=settings.AUTO_OFFSET_RESET,
+        consumer_timeout_ms=settings.CONSUMER_TIMEOUT_MS,
     )
     category = CategoryModel(category=url.split("/")[-2])
     for product in products:
         product = json.loads(product.value)
+        logger.info(f"product {type(product)}")
         product_id = product["product_detail_link"].split("/")[-3]
-        price = Decimal(product.pop["price"])
+        price = product.pop("price")
+        price = Decimal(price)
         category_item = category_dao.create_item(category)
         product_dao.create_item(
             ProductModel(

@@ -8,7 +8,7 @@ from core.constant_variables import BASE_URL
 logger = logging.getLogger(__name__)
 
 
-def get_data_stream(offset: Optional[int] = None) -> list[dict]:
+def get_data_streams(offset: Optional[int] = None) -> list[dict]:
     from main import settings
 
     logger.info("get_data_stream is started")
