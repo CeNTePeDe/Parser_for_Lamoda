@@ -16,8 +16,11 @@ db = client["product_db"]
 
 
 BASE_URL: str = "https://api.twitch.tv/helix/streams"
-
-
+KAFKA_URL: str = "kafka:9092"
+TOPIC_PRODUCT: str = "product_parser"
+TOPIC_STREAMER: str = "streamer_parser"
+AUTO_OFFSET_RESET: str = "earliest"
+CONSUMER_TIMEOUT_MS: int = 1000
 # test constant
 URL_CATEGORIES: str = "http://localhost:8000/api/categories/"
 URL_PRODUCTS: str = "http://localhost:8000/api/products/"

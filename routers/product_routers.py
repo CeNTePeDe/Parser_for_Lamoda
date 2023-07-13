@@ -5,6 +5,8 @@ from decimal import Decimal
 from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
+from core.constant_variables import (AUTO_OFFSET_RESET, CONSUMER_TIMEOUT_MS,
+                                     KAFKA_URL, TOPIC_PRODUCT)
 from database import CategoryDAO, ProductDAO
 from kafka import KafkaConsumer
 from kafka_producers.kafka_products import send_data_to_kafka_products
@@ -19,16 +21,14 @@ category_dao = CategoryDAO(collection="categories")
 
 @product_routers.post("/parser", status_code=status.HTTP_201_CREATED)
 def post_products(url: AnyUrl) -> dict:
-    from main import settings
-
     logger.info("get url")
     send_data_to_kafka_products(url)
     logger.info("retrieve data from kafka")
     products = KafkaConsumer(
-        settings.TOPIC_PRODUCT,
-        bootstrap_servers=settings.KAFKA_URL,
-        auto_offset_reset=settings.AUTO_OFFSET_RESET,
-        consumer_timeout_ms=settings.CONSUMER_TIMEOUT_MS,
+        TOPIC_PRODUCT,
+        bootstrap_servers=KAFKA_URL,
+        auto_offset_reset=AUTO_OFFSET_RESET,
+        consumer_timeout_ms=CONSUMER_TIMEOUT_MS,
     )
     category = CategoryModel(category=url.split("/")[-2])
     for product in products:
