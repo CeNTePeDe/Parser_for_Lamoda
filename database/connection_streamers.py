@@ -3,13 +3,11 @@ from typing import Optional
 
 from pymongo.collection import Collection
 
-from config.settings import get_db
+from config.settings import db
 from core.base_class import AbstractDAO
 from models.streamers_models import StreamerIn, StreamerOut
 
 logger = logging.getLogger(__name__)
-
-db = get_db()
 
 
 class StreamerDAO(AbstractDAO):

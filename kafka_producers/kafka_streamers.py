@@ -18,8 +18,7 @@ def send_data_to_kafka_streamers(url):
         producer.send(topic=settings.TOPIC_STREAMER, value=streamer_bytes)
 
 
-def kafka_consumer_for_streamers():
-    return KafkaConsumer(
+consumer_streamer = KafkaConsumer(
         settings.TOPIC_STREAMER,
         auto_offset_reset=settings.AUTO_OFFSET_RESET,
         bootstrap_servers=settings.KAFKA_URL,
