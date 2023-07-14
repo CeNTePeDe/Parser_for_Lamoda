@@ -22,4 +22,3 @@ settings = init_settings(env)
 
 client = MongoClient(settings.MONGO_URL)
 db = client.get_database(settings.MONGODB_DB)
-

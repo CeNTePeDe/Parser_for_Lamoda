@@ -3,6 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from main import app
+from tests.factories import StreamerInFactory
 
 
 @pytest.fixture()
@@ -12,12 +13,21 @@ def client():
 
 
 @pytest.fixture()
-def mongo_mock(monkeypatch):
+def test_db():
     client = mongomock.MongoClient()
-    db = client.get_database("CategoryDB")
-    col = db.get_collection("test_db")
+    db = client.get_database("test_db")
+    return db
 
-    def test_db():
-        return db
 
-    monkeypatch.setattr("core.constant_variables.db", test_db)
+@pytest.fixture()
+def streamer_build():
+    def streamer(**kwargs):
+        return StreamerInFactory.build(**kwargs)
+
+    return streamer
+
+
+@pytest.fixture()
+def streamer():
+    streamer = dict(StreamerInFactory.build())
+    return streamer

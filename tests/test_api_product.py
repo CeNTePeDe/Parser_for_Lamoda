@@ -12,7 +12,7 @@ def test_get_products(client):
     assert response.status_code == 200
 
 
-def test_create_product(client, mongo_mock):
+def test_create_product(client, test_db):
     data = ProductFactory.build()
     category = CategoryFactory.build()
     data_category = {"category": category.category}
@@ -33,7 +33,7 @@ def test_create_product(client, mongo_mock):
     assert response.status_code == 201
 
 
-def test_get_product(client, mongo_mock):
+def test_get_product(client, test_db):
     product_id = "product0"
 
     response = client.get(url=URL_PRODUCTS + f"{product_id}")
@@ -41,7 +41,7 @@ def test_get_product(client, mongo_mock):
     assert response.status_code == 200
 
 
-def test_get_invalid_product(client, mongo_mock):
+def test_get_invalid_product(client, test_db):
     product_id = "invalid_product"
 
     response = client.get(url=URL_PRODUCTS + f"{product_id}")
@@ -49,7 +49,7 @@ def test_get_invalid_product(client, mongo_mock):
     assert response.status_code == 404
 
 
-def test_update_product(client, mongo_mock):
+def test_update_product(client, test_db):
     product_id = "product0"
     data = ProductFactory.build()
     category = CategoryFactory.build()
@@ -71,7 +71,7 @@ def test_update_product(client, mongo_mock):
     assert response.status_code == 200
 
 
-def test_delete_product(client, mongo_mock):
+def test_delete_product(client, test_db):
     product_id = "product0"
 
     response = client.delete(url=URL_PRODUCTS + f"{product_id}")

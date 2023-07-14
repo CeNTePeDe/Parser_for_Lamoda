@@ -21,18 +21,19 @@ class StreamerDAO(AbstractDAO):
         streamer_data = self.collection.find_one({"id": id})
         return StreamerIn(**streamer_data) if streamer_data else None
 
-    def create_item(self, streamer_data: StreamerIn):
+    def create_item(self, streamer_data: StreamerIn) -> StreamerIn:
         streamer_dict = streamer_data.dict()
         logger.info("create streamer")
         streamer = self.collection.find_one({"id": streamer_dict["id"]})
         if streamer is None:
             new_streamer = self.collection.insert_one(streamer_dict)
             logger.info(f"new_streamer {new_streamer}")
-            return new_streamer
+            streamer = self.collection.find_one({"_id": new_streamer.inserted_id})
+            return StreamerIn(**streamer)
 
-        updated_streamer = self.update_item(streamer_dict["id"], streamer_data)
-        logger.info(f"updated streamer {updated_streamer}")
-        return updated_streamer
+        self.update_item(streamer_dict["id"], streamer_data)
+        streamer = self.collection.find_one({"id": streamer_dict["id"]})
+        return StreamerIn(**streamer)
 
     def sort_item(self) -> list[StreamerOut]:
         sort_streamer = self.collection.find().sort("viewer_count", -1)

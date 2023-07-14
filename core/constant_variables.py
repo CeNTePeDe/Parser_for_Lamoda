@@ -13,3 +13,7 @@ URL_PRODUCTS: str = "http://localhost:8000/api/products/"
 URL_PARSER_FUNCTION: str = "http://localhost:8000/api/products/parser"
 URL_FOR_PARSER: str = "https://www.lamoda.by/c/4170/clothes-maternityclothes/"
 EXPECTED_RESULT_OF_PRODUCTS: int = 83
+
+
+URL_STREAMERS: str = "http://localhost:8000/api/streamers/"
+URL_STREAMERS_PARSE: str = "http://localhost:8000/api/streamers/parsing_streamers/"

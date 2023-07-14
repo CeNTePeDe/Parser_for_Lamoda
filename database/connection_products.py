@@ -10,7 +10,6 @@ from models.product_models import ProductModel
 logger = logging.getLogger(__name__)
 
 
-
 class ProductDAO(AbstractDAO):
     collection: Collection
 

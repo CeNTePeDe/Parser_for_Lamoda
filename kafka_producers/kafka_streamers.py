@@ -19,8 +19,8 @@ def send_data_to_kafka_streamers(url):
 
 
 consumer_streamer = KafkaConsumer(
-        settings.TOPIC_STREAMER,
-        auto_offset_reset=settings.AUTO_OFFSET_RESET,
-        bootstrap_servers=settings.KAFKA_URL,
-        consumer_timeout_ms=settings.CONSUMER_TIMEOUT_MS,
-    )
+    settings.TOPIC_STREAMER,
+    auto_offset_reset=settings.AUTO_OFFSET_RESET,
+    bootstrap_servers=settings.KAFKA_URL,
+    consumer_timeout_ms=settings.CONSUMER_TIMEOUT_MS,
+)

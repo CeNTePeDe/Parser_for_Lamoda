@@ -6,7 +6,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
-from kafka_producers.kafka_products import send_data_to_kafka_products, consumer_products
+from kafka_producers.kafka_products import (consumer_products,
+                                            send_data_to_kafka_products)
 from models.product_models import CategoryModel, ProductModel
 
 logger = logging.getLogger(__name__)

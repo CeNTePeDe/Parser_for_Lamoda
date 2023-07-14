@@ -43,8 +43,10 @@ async def get_streamer(id: str) -> StreamerIn:
     return streamer
 
 
-@streamer_routers.post("/", status_code=status.HTTP_201_CREATED)
-async def create_streamer(streamer: StreamerIn) -> int:
+@streamer_routers.post(
+    "/", status_code=status.HTTP_201_CREATED, response_model=StreamerIn
+)
+async def create_streamer(streamer: StreamerIn) -> StreamerIn:
     return streamer_dao.create_item(streamer_data=streamer)
 
 
