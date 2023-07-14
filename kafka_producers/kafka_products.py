@@ -21,8 +21,7 @@ def send_data_to_kafka_products(url):
         producer.send(topic=settings.TOPIC_PRODUCT, value=product_bytes)
 
 
-def kafka_consumer_for_products():
-    return KafkaConsumer(
+consumer_products =  KafkaConsumer(
         settings.TOPIC_PRODUCT,
         bootstrap_servers=settings.KAFKA_URL,
         auto_offset_reset=settings.AUTO_OFFSET_RESET,
