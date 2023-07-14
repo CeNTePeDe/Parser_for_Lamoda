@@ -3,11 +3,13 @@ from typing import Optional
 
 from pymongo.collection import Collection
 
+from config.settings import get_db
 from core.base_class import AbstractDAO
-from core.constant_variables import db
 from models.product_models import ProductModel
 
 logger = logging.getLogger(__name__)
+
+db = get_db()
 
 
 class ProductDAO(AbstractDAO):
