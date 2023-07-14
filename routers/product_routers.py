@@ -5,11 +5,9 @@ from decimal import Decimal
 from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
-from core.constant_variables import (AUTO_OFFSET_RESET, CONSUMER_TIMEOUT_MS,
-                                     KAFKA_URL, TOPIC_PRODUCT)
 from database import CategoryDAO, ProductDAO
-from kafka import KafkaConsumer
-from kafka_producers.kafka_products import send_data_to_kafka_products
+from kafka_producers.kafka_products import (kafka_consumer_for_products,
+                                            send_data_to_kafka_products)
 from models.product_models import CategoryModel, ProductModel
 
 logger = logging.getLogger(__name__)
@@ -24,12 +22,7 @@ def post_products(url: AnyUrl) -> dict:
     logger.info("get url")
     send_data_to_kafka_products(url)
     logger.info("retrieve data from kafka")
-    products = KafkaConsumer(
-        TOPIC_PRODUCT,
-        bootstrap_servers=KAFKA_URL,
-        auto_offset_reset=AUTO_OFFSET_RESET,
-        consumer_timeout_ms=CONSUMER_TIMEOUT_MS,
-    )
+    products = kafka_consumer_for_products()
     category = CategoryModel(category=url.split("/")[-2])
     for product in products:
         product = json.loads(product.value)

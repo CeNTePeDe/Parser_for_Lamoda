@@ -4,11 +4,9 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
 
-from core.constant_variables import (AUTO_OFFSET_RESET, CONSUMER_TIMEOUT_MS,
-                                     KAFKA_URL, TOPIC_STREAMER)
 from database import StreamerDAO
-from kafka import KafkaConsumer
-from kafka_producers.kafka_streamers import send_data_to_kafka_streamers
+from kafka_producers.kafka_streamers import (kafka_consumer_for_streamers,
+                                             send_data_to_kafka_streamers)
 from models.streamers_models import StreamerIn, StreamerOut
 from parsers.parse_streamer import get_data_streams
 
@@ -29,13 +27,7 @@ async def get_streamers_from_twitch(offset: Optional[int] = None) -> list[Stream
     logger.info("send data to kafka")
     send_data_to_kafka_streamers(list_streamers)
 
-    streamers = KafkaConsumer(
-        TOPIC_STREAMER,
-        auto_offset_reset=AUTO_OFFSET_RESET,
-        bootstrap_servers=KAFKA_URL,
-        consumer_timeout_ms=CONSUMER_TIMEOUT_MS,
-    )
-
+    streamers = kafka_consumer_for_streamers()
     for streamer in streamers:
         streamer = json.loads(streamer.value)
         streamer_dao.create_item(StreamerIn(**streamer))
