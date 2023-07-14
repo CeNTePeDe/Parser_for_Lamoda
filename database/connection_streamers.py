@@ -44,11 +44,10 @@ class StreamerDAO(AbstractDAO):
         list_streamers = [StreamerOut(**item) for item in collection]
         return list_streamers
 
-    def update_item(self, id: str, streamer_data: StreamerIn) -> Optional[int]:
-        streamer_update = self.collection.update_one(
-            {"id": id}, {"$set": streamer_data.dict()}
-        )
-        return streamer_update.modified_count
+    def update_item(self, id: str, streamer_data: StreamerIn) -> StreamerIn:
+        self.collection.update_one({"id": id}, {"$set": streamer_data.dict()})
+        streamer = self.collection.find_one({"id": streamer_data.dict()["id"]})
+        return StreamerIn(**streamer)
 
     def delete_item(self, id: str) -> int:
         deleted_product = self.collection.delete_one({"id": {"$eq": id}})

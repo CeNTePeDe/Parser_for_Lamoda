@@ -50,8 +50,10 @@ async def create_streamer(streamer: StreamerIn) -> StreamerIn:
     return streamer_dao.create_item(streamer_data=streamer)
 
 
-@streamer_routers.patch("/{id}", status_code=status.HTTP_200_OK)
-async def update_streamer(id: str, streamer_data: StreamerIn) -> Optional[int]:
+@streamer_routers.patch(
+    "/{id}", status_code=status.HTTP_200_OK, response_model=StreamerIn
+)
+async def update_streamer(id: str, streamer_data: StreamerIn) -> StreamerIn:
     streamer_updated = streamer_dao.update_item(id=id, streamer_data=streamer_data)
     if streamer_updated == 0:
         raise HTTPException(status_code=404, detail="Streamer not found")

@@ -1,7 +1,11 @@
+from unittest import mock
+
 import mongomock
 import pytest
 from fastapi.testclient import TestClient
+from mongomock.collection import Collection
 
+from database import StreamerDAO
 from main import app
 from tests.factories import StreamerInFactory
 
@@ -31,3 +35,11 @@ def streamer_build():
 def streamer():
     streamer = dict(StreamerInFactory.build())
     return streamer
+
+
+@pytest.fixture()
+def dao_streamer_test():
+    mock_collection = mock.MagicMock(Collection)
+    dao = StreamerDAO()
+    dao.collection = mock_collection
+    yield dao

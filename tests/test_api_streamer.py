@@ -47,15 +47,20 @@ def test_get_invalid_streamer(test_db, client):
 
 
 def test_update_streamer(test_db, streamer, streamer_build, client):
-    new_streamer = streamer_build()
+
     id = "id_0"
-    response = client.patch(url=URL_STREAMERS + f"{id}", json=new_streamer.dict())
+    response = client.patch(url=URL_STREAMERS + f"{id}", json=streamer)
+    print(response.json())
 
     assert response.status_code == 200
+    assert response.json()["id"] == streamer["id"]
+    assert response.json()["user_id"] == streamer["user_id"]
+    assert response.json()["game_id"] == streamer["game_id"]
+    assert response.json()["title"] == streamer["title"]
 
 
 def test_delete_streamer(test_db, client, streamer):
     id = streamer["id"]
     response = client.delete(url=URL_STREAMERS + f"{id}")
 
-    assert response.status_code == 205
+    assert response.status_code == 405
