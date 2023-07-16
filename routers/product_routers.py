@@ -30,7 +30,7 @@ def post_products(url: AnyUrl) -> dict:
         price = product.pop("price")
         price = Decimal(price)
         category_item = category_dao.create_item(category)
-        product_dao.create_item(
+        product = product_dao.create_item(
             ProductModel(
                 **product, price=price, category=category_item, product_id=product_id
             )
@@ -53,17 +53,17 @@ async def get_product(product_id: str) -> ProductModel:
 
 
 @product_routers.post("/", status_code=status.HTTP_201_CREATED)
-async def create_product(product: ProductModel) -> dict:
+async def create_product(product: ProductModel) -> ProductModel:
     logger.info("product create is started")
     category = product.category
     category_dao.create_item(category)
     product = product_dao.create_item(product)
     logger.info("product is created")
-    return {"message": "product is created"}
+    return product
 
 
 @product_routers.put("/{product_id}", status_code=status.HTTP_200_OK)
-async def update_product(product_id: str, product: ProductModel) -> int:
+async def update_product(product_id: str, product: ProductModel) -> ProductModel:
     new_product = product_dao.update_item(product_id, product)
     if new_product == 0:
         raise HTTPException(status_code=404, detail="Product not found")

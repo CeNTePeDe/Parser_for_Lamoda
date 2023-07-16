@@ -32,7 +32,7 @@ class ProductDAO(AbstractDAO):
             return None
         return ProductModel(**product)
 
-    def create_item(self, product: ProductModel) -> int:
+    def create_item(self, product: ProductModel) -> ProductModel:
         logger.info("created_product method is started")
         product_dict = product.dict()
         price_old = str(product_dict.pop("price"))
@@ -44,18 +44,23 @@ class ProductDAO(AbstractDAO):
             logger.info(f"the second product dict is {product_dict}")
             product = self.collection.insert_one(product_dict)
             logger.info("created product")
-            return product.inserted_id
+            new_product = self.collection.find_one({"_id": product.inserted_id})
+            return ProductModel(**new_product)
         logger.info("updated product")
-        update_product = self.collection.update_one(
+        self.collection.update_one(
             {"product_id": product_dict["product_id"]}, {"$set": product_dict}
         )
-        return update_product.modified_count
-
-    def update_item(self, product_id: str, product: ProductModel) -> int:
-        product_update = self.collection.update_one(
-            {"product_id": product_id}, {"$set": product.dict()}
+        updated_product = self.collection.find_one(
+            {"product_id": product_dict["product_id"]}
         )
-        return product_update.modified_count
+        return ProductModel(**updated_product)
+
+    def update_item(self, product_id: str, product: ProductModel) -> ProductModel:
+        self.collection.update_one({"product_id": product_id}, {"$set": product.dict()})
+        product_updated = self.collection.find_one(
+            {"product_id": product.dict()["product_id"]}
+        )
+        return ProductModel(**product_updated)
 
     def delete_item(self, product_id: str) -> int:
         deleted_product = self.collection.delete_one(

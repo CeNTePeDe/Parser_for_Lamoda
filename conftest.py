@@ -7,7 +7,7 @@ from mongomock.collection import Collection
 
 from database import StreamerDAO
 from main import app
-from tests.factories import StreamerInFactory
+from tests.factories import CategoryFactory, ProductFactory, StreamerInFactory
 
 
 @pytest.fixture()
@@ -29,6 +29,22 @@ def streamer_build():
         return StreamerInFactory.build(**kwargs)
 
     return streamer
+
+
+@pytest.fixture()
+def category_build():
+    def category(**kwargs):
+        return CategoryFactory.build(**kwargs)
+
+    return category
+
+
+@pytest.fixture()
+def product_build():
+    def product(**kwargs):
+        return ProductFactory.build(**kwargs)
+
+    return product
 
 
 @pytest.fixture()

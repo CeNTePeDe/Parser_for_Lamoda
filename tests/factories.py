@@ -20,14 +20,14 @@ class ProductFactory(factory.mongoengine.MongoEngineFactory):
     class Meta:
         model = ProductModel
 
-    name_product = "test_product"
+    name_product = factory.Sequence(lambda n: f"product_{n}")
     picture_link = factory.Faker("url")
     price = str(random.uniform(50.0, 500.0))
     product_detail_link = factory.Faker("url")
     characteristic = {}
-    description = "description"
+    description = factory.Sequence(lambda n: f"description_{n}")
     category = factory.SubFactory(CategoryFactory)
-    product_id = "product0"
+    product_id = factory.Sequence(lambda n: f"id_{n}")
 
 
 class StreamerInFactory(factory.mongoengine.MongoEngineFactory):
