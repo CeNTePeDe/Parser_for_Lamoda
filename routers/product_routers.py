@@ -1,12 +1,14 @@
-import asyncio
+import json
 import logging
+from decimal import Decimal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
+from kafka_producers.kafka_products import (consumer_products,
+                                            send_data_to_kafka_products)
 from models.product_models import CategoryModel, ProductModel
-from parsers.parse_product import gather_data
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +20,20 @@ category_dao = CategoryDAO(collection="categories")
 @product_routers.post("/parser", status_code=status.HTTP_201_CREATED)
 def post_products(url: AnyUrl) -> dict:
     logger.info("get url")
-    products = asyncio.run(gather_data(url))
+    send_data_to_kafka_products(url)
+    logger.info("retrieve data from kafka")
     category = CategoryModel(category=url.split("/")[-2])
-    for product in products:
+    for product in consumer_products:
+        product = json.loads(product.value)
+        logger.info(f"product {type(product)}")
         product_id = product["product_detail_link"].split("/")[-3]
+        price = product.pop("price")
+        price = Decimal(price)
         category_item = category_dao.create_item(category)
-        product_dao.create_item(
-            ProductModel(**product, category=category_item, product_id=product_id)
+        product = product_dao.create_item(
+            ProductModel(
+                **product, price=price, category=category_item, product_id=product_id
+            )
         )
         logger.info(f"product is {product}")
     return {"message": "products are created"}
@@ -44,17 +53,17 @@ async def get_product(product_id: str) -> ProductModel:
 
 
 @product_routers.post("/", status_code=status.HTTP_201_CREATED)
-async def create_product(product: ProductModel) -> dict:
+async def create_product(product: ProductModel) -> ProductModel:
     logger.info("product create is started")
     category = product.category
     category_dao.create_item(category)
     product = product_dao.create_item(product)
     logger.info("product is created")
-    return {"message": "product is created"}
+    return product
 
 
 @product_routers.put("/{product_id}", status_code=status.HTTP_200_OK)
-async def update_product(product_id: str, product: ProductModel) -> int:
+async def update_product(product_id: str, product: ProductModel) -> ProductModel:
     new_product = product_dao.update_item(product_id, product)
     if new_product == 0:
         raise HTTPException(status_code=404, detail="Product not found")

@@ -23,6 +23,7 @@ pytest-asyncio = "*"
 httpx = "*"
 factory-boy = "*"
 mongomock = "*"
+kafka-python = "*"
 
 [dev-packages]
 

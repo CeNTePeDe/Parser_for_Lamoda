@@ -18,6 +18,22 @@ class SettingsDev(BaseSettings):
 
     # Mongo_DB Collections
     PRODUCT_COLLECTION = "products"
+    # Kafka
+    KAFKA_URL: str = os.environ.get("KAFKA_URL")
+    TOPIC_PRODUCT: str = "product_parser"
+    TOPIC_STREAMER: str = "streamer_parser"
+    CONSUMER_TIMEOUT_MS: int = 1000
+    AUTO_OFFSET_RESET: str = "earliest"
+
+    HEADERS: dict = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
+                        Chrome/114.0.0.0 Safari/537.36"
+    }
+
+    HEADERS_TWITCH: dict = {
+        "Client-ID": os.environ.get("ID"),
+        "Authorization": os.environ.get("TOKEN"),
+    }
 
     LOGGING_CONFIG: dict = {
         "version": 1,

@@ -1,11 +1,10 @@
 import logging
 from typing import Optional
 
-from fastapi import HTTPException
 from pymongo.collection import Collection
 
+from config.settings import db
 from core.base_class import AbstractDAO
-from core.constant_variables import db
 from models.product_models import ProductModel
 
 logger = logging.getLogger(__name__)
@@ -36,18 +35,32 @@ class ProductDAO(AbstractDAO):
     def create_item(self, product: ProductModel) -> ProductModel:
         logger.info("created_product method is started")
         product_dict = product.dict()
-        logger.info(f"product dict is {product_dict}")
         price_old = str(product_dict.pop("price"))
         product_dict["price"] = str(price_old)
-        logger.info(f"the second product dict is {product_dict}")
-        product = self.collection.insert_one(product_dict)
-        return product.inserted_id
-
-    def update_item(self, product_id: str, product: ProductModel) -> int:
-        product_update = self.collection.update_one(
-            {"product_id": product_id}, {"$set": product.dict()}
+        check_product = self.collection.find_one(
+            {"product_id": product_dict["product_id"]}
         )
-        return product_update.modified_count
+        if check_product is None:
+            logger.info(f"the second product dict is {product_dict}")
+            product = self.collection.insert_one(product_dict)
+            logger.info("created product")
+            new_product = self.collection.find_one({"_id": product.inserted_id})
+            return ProductModel(**new_product)
+        logger.info("updated product")
+        self.collection.update_one(
+            {"product_id": product_dict["product_id"]}, {"$set": product_dict}
+        )
+        updated_product = self.collection.find_one(
+            {"product_id": product_dict["product_id"]}
+        )
+        return ProductModel(**updated_product)
+
+    def update_item(self, product_id: str, product: ProductModel) -> ProductModel:
+        self.collection.update_one({"product_id": product_id}, {"$set": product.dict()})
+        product_updated = self.collection.find_one(
+            {"product_id": product.dict()["product_id"]}
+        )
+        return ProductModel(**product_updated)
 
     def delete_item(self, product_id: str) -> int:
         deleted_product = self.collection.delete_one(

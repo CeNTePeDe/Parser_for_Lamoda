@@ -1,9 +1,4 @@
-import logging
-
 from core.constant_variables import URL_PRODUCTS
-from tests.factories import CategoryFactory, ProductFactory
-
-logger = logging.getLogger(__name__)
 
 
 def test_get_products(client):
@@ -12,9 +7,9 @@ def test_get_products(client):
     assert response.status_code == 200
 
 
-def test_create_product(client, mongo_mock):
-    data = ProductFactory.build()
-    category = CategoryFactory.build()
+def test_create_product(client, test_db, product_build, category_build):
+    data = product_build()
+    category = category_build()
     data_category = {"category": category.category}
     payload = {
         "name_product": data.name_product,
@@ -26,22 +21,29 @@ def test_create_product(client, mongo_mock):
         "category": data_category,
         "product_id": data.product_id,
     }
-    logger.info(f"payload is {payload}")
 
     response = client.post(url=URL_PRODUCTS, json=payload)
 
     assert response.status_code == 201
+    assert response.json()["product_id"] == payload["product_id"]
+    assert response.json()["picture_link"] == payload["picture_link"]
+    assert str(response.json()["price"]) == payload["price"]
+    assert response.json()["product_detail_link"] == payload["product_detail_link"]
+    assert response.json()["description"] == payload["description"]
 
 
-def test_get_product(client, mongo_mock):
-    product_id = "product0"
+def test_get_product(client, test_db):
+    product_id = "id_0"
 
     response = client.get(url=URL_PRODUCTS + f"{product_id}")
 
     assert response.status_code == 200
+    assert response.json()["product_id"] == "id_0"
+    assert response.json()["name_product"] == "product_0"
+    assert response.json()["product_id"] == "id_0"
 
 
-def test_get_invalid_product(client, mongo_mock):
+def test_get_invalid_product(client, test_db):
     product_id = "invalid_product"
 
     response = client.get(url=URL_PRODUCTS + f"{product_id}")
@@ -49,30 +51,33 @@ def test_get_invalid_product(client, mongo_mock):
     assert response.status_code == 404
 
 
-def test_update_product(client, mongo_mock):
-    product_id = "product0"
-    data = ProductFactory.build()
-    category = CategoryFactory.build()
+def test_update_product(client, test_db, category_build, product_build):
+    product_id = "id_0"
+    data = product_build()
+    category = category_build()
     data_category = {"category": category.category}
     payload = {
         "name_product": data.name_product,
         "picture_link": data.picture_link,
-        "price": 123.7,
+        "price": data.price,
         "product_detail_link": data.product_detail_link,
         "characteristic": data.characteristic,
         "description": data.description,
         "category": data_category,
-        "product_id": data.product_id,
+        "product_id": "id_0",
     }
-    logger.info(f"payload is {payload}")
 
     response = client.put(url=URL_PRODUCTS + f"{product_id}", json=payload)
 
     assert response.status_code == 200
+    assert response.json()["product_id"] == payload["product_id"]
+    assert response.json()["product_detail_link"] == payload["product_detail_link"]
+    assert response.json()["description"] == payload["description"]
+    assert response.json()["name_product"] == payload["name_product"]
 
 
-def test_delete_product(client, mongo_mock):
-    product_id = "product0"
+def test_delete_product(client, test_db):
+    product_id = "id_0"
 
     response = client.delete(url=URL_PRODUCTS + f"{product_id}")
 

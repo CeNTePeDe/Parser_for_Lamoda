@@ -1,11 +1,10 @@
 import logging
 from typing import Optional
 
-from fastapi import HTTPException
 from pymongo.collection import Collection
 
+from config.settings import db
 from core.base_class import AbstractDAO
-from core.constant_variables import db
 from models.product_models import CategoryModel
 
 logger = logging.getLogger(__name__)
