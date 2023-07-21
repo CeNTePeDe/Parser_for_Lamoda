@@ -1,8 +1,9 @@
 import json
 import logging
 from decimal import Decimal
+from typing import Optional
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import AnyUrl
 
 from database import CategoryDAO, ProductDAO
@@ -54,8 +55,15 @@ async def get_products(
     return product_dao.get_all_items()
 
 
-@product_routers.get(
-    "/{product_id}", status_code=status.HTTP_200_OK)
+@product_routers.get("/{category_name}", status_code=status.HTTP_200_OK)
+async def get_products_by_category(
+    category_name,
+    product_dao=Depends(ProductDAO),
+) -> Optional[list[ProductModel]]:
+    return product_dao.get_items_by_category(category_name=category_name)
+
+
+@product_routers.get("/{product_id}", status_code=status.HTTP_200_OK)
 async def get_product(
     product_id: str,
     product_dao=Depends(ProductDAO),
@@ -66,8 +74,7 @@ async def get_product(
     return product
 
 
-@product_routers.post(
-    "/", status_code=status.HTTP_201_CREATED)
+@product_routers.post("/", status_code=status.HTTP_201_CREATED)
 async def create_product(
     product: ProductModel,
     product_dao=Depends(ProductDAO),
@@ -81,8 +88,7 @@ async def create_product(
     return product
 
 
-@product_routers.put(
-    "/{product_id}", status_code=status.HTTP_200_OK)
+@product_routers.put("/{product_id}", status_code=status.HTTP_200_OK)
 async def update_product(
     product_id: str,
     product: ProductModel,
@@ -94,8 +100,7 @@ async def update_product(
     return new_product
 
 
-@product_routers.delete(
-    "/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+@product_routers.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_product(
     product_id: str,
     product_dao=Depends(ProductDAO),

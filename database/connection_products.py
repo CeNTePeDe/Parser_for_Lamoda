@@ -32,6 +32,12 @@ class ProductDAO(AbstractDAO):
             return None
         return ProductModel(**product)
 
+    def get_items_by_category(self, category_name: str) -> Optional[list[ProductModel]]:
+        products = self.collection.find({"category": {"category": category_name}})
+        if products is None:
+            return None
+        return [ProductModel(**product) for product in products]
+
     def create_item(self, product: ProductModel) -> ProductModel:
         logger.info("created_product method is started")
         product_dict = product.dict()

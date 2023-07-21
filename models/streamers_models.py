@@ -17,7 +17,7 @@ class StreamerIn(BaseModel):
     language: Optional[str] = None
     thumbnail_url: AnyUrl
     tag_ids: list
-    tags: list[str]
+    tags: Optional[list[str]] = None
     is_mature: bool
 
 

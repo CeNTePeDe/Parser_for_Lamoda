@@ -33,11 +33,16 @@ class StreamerDAO(AbstractDAO):
 
         self.update_item(streamer_dict["id"], streamer_data)
         streamer = self.collection.find_one({"id": streamer_dict["id"]})
+        logger.info(f"update_streamer {streamer}")
         return StreamerIn(**streamer)
 
     def sort_item(self) -> list[StreamerOut]:
         sort_streamer = self.collection.find().sort("viewer_count", -1)
         return [StreamerOut(**item) for item in sort_streamer]
+
+    def get_item_by_game(self, game_name: str) -> Optional[list[StreamerOut]]:
+        streamers_by_game = self.collection.find({"game_name": game_name})
+        return [StreamerOut(**item) for item in streamers_by_game]
 
     def get_all_items(self) -> list[StreamerOut]:
         collection = self.collection.find()

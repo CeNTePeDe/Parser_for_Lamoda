@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from database import CategoryDAO
 from models.product_models import CategoryModel
@@ -46,9 +46,7 @@ async def create_category(
 
 
 @category_routers.delete("/{category}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(
-    category: str, category_dao=Depends(CategoryDAO)
-) -> None:
+async def delete_category(category: str, category_dao=Depends(CategoryDAO)) -> None:
     logger.info("category is deleted")
     if category_dao.delete_item(category) == 0:
         raise HTTPException(status_code=404, detail="Category not found")

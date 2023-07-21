@@ -17,7 +17,6 @@ def test_parse_streamer(client):
     assert response.status_code == 200
 
 
-
 def test_create_streamer(test_db, client, streamer):
     response = client.post(url=URL_STREAMERS, json=streamer)
 
@@ -47,7 +46,6 @@ def test_get_invalid_streamer(test_db, client):
 
 
 def test_update_streamer(test_db, streamer, streamer_build, client):
-
     id = "id_0"
     response = client.patch(url=URL_STREAMERS + f"{id}", json=streamer)
     print(response.json())
