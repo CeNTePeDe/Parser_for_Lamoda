@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 class CategoryDAO(AbstractDAO):
     collection: Collection
 
-    def __init__(self, collection: str):
-        self.collection: Collection = db[collection]
+    def __init__(self):
+        self.collection: Collection = db["categories"]
         super().__init__(self.collection)
 
     def get_item(self, category: str) -> Optional[CategoryModel]:
