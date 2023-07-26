@@ -8,10 +8,27 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/usr/src/parser_for_lamoda
+      - .:/usr/src/parser_application
+    environment:
+      - POSTGRESQL_URL=${POSTGRESQL_URL}
     depends_on:
       - mongo
       - kafka
+      - postgresql_db
+
+  postgresql_db:
+    image: postgres:15-alpine
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    expose:
+      - ${POSTGRES_PORT}
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
 
   mongo:
     image: mongo
@@ -39,7 +56,7 @@ services:
     ports:
       - "29092:29092"
     environment:
-      KAFKA_BROKER_ID : ${KAFKA_BROKER_ID}
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID}
       KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
       KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP}
@@ -51,3 +68,4 @@ services:
 
 volumes:
   mongodb:
+  postgres_data:
